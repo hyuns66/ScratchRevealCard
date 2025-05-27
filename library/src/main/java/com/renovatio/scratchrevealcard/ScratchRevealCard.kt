@@ -28,15 +28,10 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ScratchRevealCard(
     modifier: Modifier = Modifier,
-//    overlayPainter: Painter,          // 긁어낼 코팅 (단색, 그라디언트, 이미지 모두 OK)
-//    revealedContent: @Composable () -> Unit, // 드러날 실제 콘텐츠
-    brushSize: Dp = 32.dp,            // 긁어 내는 크기
+    brushSize: Float = with(LocalDensity.current) { 10.dp.toPx() },            // 긁어 내는 크기
     onScratchProgress: (Float) -> Unit = {}, // 0f~1f
     onFullyRevealed: () -> Unit = {}        // 80% 이상 긁으면 콜백
 ) {
-    // keep a single Path that grows as the user draws
-    val strokePx = with(LocalDensity.current) { 10.dp.toPx() }
-
     var point by remember { mutableStateOf(Offset.Zero) } // point 위치 추적을 위한 State
     val points = remember { mutableListOf<Offset>() } // 새로 그려지는 path 표시하기 위한 points State
     var path by remember { mutableStateOf(Path()) } // 새로 그려지고 있는 중인 획 State
@@ -69,7 +64,6 @@ fun ScratchRevealCard(
                         onDragEnd = {
                             paths.add(path)
                             points.clear()
-                            onScratchProgress(1f)
                         },
                     )
                 }
@@ -79,14 +73,14 @@ fun ScratchRevealCard(
                 drawPath(
                     path = path,
                     color = Color.Black,
-                    style = Stroke(width = strokePx, cap = StrokeCap.Round, join = StrokeJoin.Round)
+                    style = Stroke(width = brushSize, cap = StrokeCap.Round, join = StrokeJoin.Round)
                 )
             }
             // 현재 그려지고 있는 획
             drawPath(
                 path = path,
                 color = Color.Black,
-                style = Stroke(width = strokePx, cap = StrokeCap.Round, join = StrokeJoin.Round)
+                style = Stroke(width = brushSize, cap = StrokeCap.Round, join = StrokeJoin.Round)
             )
         }
     }
